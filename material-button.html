@@ -1,15 +1,13 @@
 <template id='materialBtn'>
-
 	<style>
-
 		:host {
-			display: inline-block;
-			font-size: 1em;
-			padding: 0;
-			margin: 0;
-		}
 
-		.material-btn {
+			--init-ripple-size: 1px;
+			--ripple-margin: calc(var(--init-ripple-size) / -2);
+
+			display: inline-block;
+			font-size: .9em;
+			margin: 0;
 			cursor: pointer;
 			position: relative;
 			outline: none;
@@ -19,11 +17,11 @@
 			contain: layout style;
 		}
 
-		.material-btn:hover::after {
+		:host:hover::after {
 			opacity: 1;
 		}
 
-		.material-btn::after {
+		:host::after {
 			content: " ";
 			position: absolute;
 			left: 0;
@@ -48,10 +46,6 @@
 		}
 
 		.material-btn__ripple {
-
-			--init-ripple-size: 1px;
-			--ripple-margin: calc(var(--init-ripple-size) / -2);
-
 			position: absolute;
 			left: 0;
 			top: 0;
@@ -73,17 +67,14 @@
 		}
 	</style>
 
-	<button class='material-btn js-material-btn'>
 
-		<span class='material-btn__wrap'>
+	<span class='material-btn__wrap'>
 
-			<span class='material-btn__ripple js-ripple'></span>
+		<span class='material-btn__ripple js-ripple'></span>
 
-		</span>
+	</span>
 
-		<span class='material-btn__text js-text'>HEllo world</span>
-
-	</button>
+	<span class='material-btn__text js-text'>HEllo world</span>
 
 </template>
 

@@ -1,9 +1,9 @@
 
 class MaterialBtn extends HTMLElement {
 
-	// static get observedAttributes() {
-	// 	return [ "color" ];
-	// }
+	static get observedAttributes() {
+		return [ "color" ];
+	}
 
 	constructor() {
 		super();
@@ -38,27 +38,28 @@ class MaterialBtn extends HTMLElement {
 
 		this._setUpComponent();
 
-		this._$button= this._root.querySelector('.js-material-btn');
-		this._$textEl= this._$button.querySelector('.js-text');
-		this._$ripple= this._$button.querySelector('.js-ripple');
+		this._$textEl= this._root.querySelector('.js-text');
+		this._$ripple= this._root.querySelector('.js-ripple');
 
 		this._initializeComponent();
 	}
 
 	_setUpComponent() {
 
-		this._color= this.dataset.color || this.DEFAULT_COLOR;
+		this.color= this.dataset.color || this.DEFAULT_COLOR;
 
 		this.text= this.textContent || '';
+
+		this._hasDropShadow= this.dataset.isElevated || true;
 	}
 
 	_initializeComponent() {
 
 		this._$textEl.textContent= this.text;
 
-		this._$button.style.backgroundColor= this.color;
+		this.style.backgroundColor= this.color;
 
-		this._$button.addEventListener('click', this._buttonClickHandler);
+		this.addEventListener('click', this._buttonClickHandler);
 	}
 
 	_buttonClickHandler(e) {
@@ -91,7 +92,7 @@ class MaterialBtn extends HTMLElement {
 	_setupAnimationInitialState(clickPos) {
 
 		// Dimensions and position data
-		const dimens= this._$button.getBoundingClientRect();
+		const dimens= this.getBoundingClientRect();
 
 
 		// current state of the ripple
@@ -158,8 +159,8 @@ class MaterialBtn extends HTMLElement {
 	disconnectedCallback() {
 
 		// Unbind the event handler when the element is disconnected
-		this._$button.removeEventListener('click', this._buttonClickHandler);
+		this.removeEventListener('click', this._buttonClickHandler);
 	}
 }
 
-window.customElements.define('material-btn', MaterialBtn);
+window.customElements.define('material-btn', MaterialBtn, {extends: 'button'});
