@@ -80,18 +80,12 @@ class MaterialBtn extends HTMLElement {
 			y: clickPos.y - dimens.top
 		};
 
-		console.log(this._clickPos);
-
-		this._$ripple.style.left= `${clickPos.x - dimens.left}px`;
-		this._$ripple.style.top=  `${clickPos.y - dimens.top}px`;
-
 		window.requestAnimationFrame(this._renderLoop);
 	}
 
 	_renderLoop() {
 
-		this._$ripple.style.transform= `scale(${this._currentRipple.scale})`;
-		
+		this._$ripple.style.transform= `translate(${this._clickPos.x}px, ${this._clickPos.y}px) scale(${this._currentRipple.scale})`;
 		this._$ripple.style.opacity= this._currentRipple.opacity;
 
 		this._currentRipple.scale += (this._targetRipple.scale - this._currentRipple.scale)/10;
