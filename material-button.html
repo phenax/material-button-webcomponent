@@ -2,28 +2,83 @@
 
 	<style>
 		:host {
-
+			display: inline-block;
+			font-size: 1em;
+			padding: 0;
+			margin: 0;
 		}
 
 		.material-btn {
+			cursor: pointer;
+			position: relative;
+			outline: none;
+			border: none;
+			padding: 1em 2em;
+			color: #fff;
+			contain: content;
+		}
 
+		.material-btn:hover::after {
+			opacity: 1;
+		}
+
+		.material-btn::after {
+			content: " ";
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(255,255,255,.1);
+
+			opacity: .8;
+			transition: opacity .3s ease-in-out;
+			will-change: opacity;
+			box-shadow: 0 2px 10px 2px rgba(0,0,0,.4);
+		}
+
+		.material-btn__wrap {
+			overflow: hidden;
 		}
 
 		.material-btn__ripple {
 
+			--init-ripple-size: 1px;
+			--ripple-margin: calc(var(--init-ripple-size) / -2);
+
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: var(--init-ripple-size);
+			height: var(--init-ripple-size);
+			background-color: #fff;
+			border-radius: 50%;
+			margin-left: var(--ripple-margin);
+			margin-top: var(--ripple-margin);
+			z-index: 0;
+
+			contain: layout style;
+			will-change: opacity transform;
 		}
 
 		.material-btn__text {
-
+			position: relative;
+			z-index: 1;
 		}
 	</style>
 
-	<button className='material-btn'>
-		
-		<span className='material-btn__ripple js-ripple'></span>
-		
-		<span className='material-btn__text js-text'></span>
+	<button class='material-btn js-material-btn'>
+
+		<span class='material-btn__wrap'>
+
+			<span class='material-btn__ripple js-ripple'></span>
+
+			<span class='material-btn__text js-text'>HEllo world</span>
+
+		</span>
+
 	</button>
+
 </template>
 
 <script src='./material-button.js'></script>
