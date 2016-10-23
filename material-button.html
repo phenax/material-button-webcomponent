@@ -1,6 +1,7 @@
 <template id='materialBtn'>
 
 	<style>
+
 		:host {
 			display: inline-block;
 			font-size: 1em;
@@ -29,9 +30,9 @@
 			top: 0;
 			width: 100%;
 			height: 100%;
-			background-color: rgba(255,255,255,.2);
+			background-color: rgba(255,255,255,.35);
 
-			opacity: .7;
+			opacity: .5;
 			transition: opacity .3s ease-in-out;
 			will-change: opacity, transform;
 			box-shadow: 0 1px 5px 2px rgba(0,0,0,.3);
@@ -39,6 +40,11 @@
 
 		.material-btn__wrap {
 			overflow: hidden;
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
 		}
 
 		.material-btn__ripple {
@@ -73,9 +79,9 @@
 
 			<span class='material-btn__ripple js-ripple'></span>
 
-			<span class='material-btn__text js-text'>HEllo world</span>
-
 		</span>
+
+		<span class='material-btn__text js-text'>HEllo world</span>
 
 	</button>
 

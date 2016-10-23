@@ -10,8 +10,11 @@ class MaterialBtn extends HTMLElement {
 
 		this.DEFAULT_COLOR= '#3F51B5';
 
+
 		this._buttonClickHandler= this._buttonClickHandler.bind(this);
+		this._calculationLoop= this._calculationLoop.bind(this);
 		this._renderLoop= this._renderLoop.bind(this);
+
 
 		const $content= document.currentScript.ownerDocument;
 		const $template= $content.querySelector('#materialBtn');
@@ -66,6 +69,12 @@ class MaterialBtn extends HTMLElement {
 		});
 	}
 
+
+	/**
+	 * (public) Trigger a ripple in the button
+	 * 
+	 * @param  {[type]} clickPos [description]
+	 */
 	triggerRipple(clickPos) {
 
 		if(this._isAnimating)
@@ -73,47 +82,84 @@ class MaterialBtn extends HTMLElement {
 
 		this._isAnimating= true;
 
+		this._setupAnimationInitialState(clickPos);
+
+		window.requestAnimationFrame(this._calculationLoop);
+		window.requestAnimationFrame(this._renderLoop);
+	}
+
+	_setupAnimationInitialState(clickPos) {
+
+		// Dimensions and position data
 		const dimens= this._$button.getBoundingClientRect();
 
+
+		// current state of the ripple
 		this._currentRipple= { scale: 0, opacity: 1 };
+
+
+		// relative click position
 		this._clickPos= {
-			x: clickPos.x - dimens.left,
-			y: clickPos.y - dimens.top
+			x: (clickPos)? clickPos.x - dimens.left: dimens.width/2,
+			y: (clickPos)? clickPos.y - dimens.top: dimens.height/2
 		};
+
+
+		// Dont know what to call this. It does some calculation.
+		const getRippleSize= (size, pos) => ((pos > size/2)? pos: size - pos);
+
+
+		// The target state of the ripple
 		this._targetRipple= {
 			scale: 2* Math.sqrt(
-				Math.pow((this._clickPos.x > dimens.width/2)? this._clickPos.x: dimens.width - this._clickPos.x, 2) + 
-				Math.pow((this._clickPos.y > dimens.height/2)? this._clickPos.y: dimens.height - this._clickPos.y, 2)
+				Math.pow(getRippleSize(dimens.width, this._clickPos.x),  2) + 
+				Math.pow(getRippleSize(dimens.height, this._clickPos.y), 2)
 			),
 			opacity: 0,
 		};
+	}
 
-		window.requestAnimationFrame(this._renderLoop);
+	_calculationLoop() {
+
+		// current+= (target - current)/strength for easing the increments
+		this._currentRipple.scale +=   (this._targetRipple.scale - this._currentRipple.scale)/10;
+
+		this._currentRipple.opacity += (this._targetRipple.opacity - this._currentRipple.opacity)/15;
+
+
+		// If the opacity crosses a minimum, stop loop
+		if( this._currentRipple.opacity <= 0.05 )
+			this._isAnimating= false;
+		else
+			window.requestAnimationFrame(this._calculationLoop);
 	}
 
 	_renderLoop() {
 
+
+		// apply the styles in the calculation loop
 		this._$ripple.style.transform= `
 			translate(${this._clickPos.x}px, ${this._clickPos.y}px)
 			scale(${this._currentRipple.scale})
 		`;
+
 		this._$ripple.style.opacity= this._currentRipple.opacity;
 
-		this._currentRipple.scale +=   (this._targetRipple.scale - this._currentRipple.scale)/10;
-		this._currentRipple.opacity += (this._targetRipple.opacity - this._currentRipple.opacity)/20;
 
-		if( this._currentRipple.opacity <= 0.01 )
-			this._isAnimating= false;
-
+		// If the calculation loop has ended, stop animating and reset the styles
 		if(this._isAnimating)
 			window.requestAnimationFrame(this._renderLoop);
-		else
+		else {
+			this._$ripple.style.transform= 'none'
 			this._$ripple.style.opacity= 0;
+		}
 	}
 
 	disconnectedCallback() {
+
+		// Unbind the event handler when the element is disconnected
 		this._$button.removeEventListener('click', this._buttonClickHandler);
 	}
 }
 
-customElements.define('material-btn', MaterialBtn);
+window.customElements.define('material-btn', MaterialBtn);
