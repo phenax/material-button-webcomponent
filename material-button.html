@@ -15,7 +15,7 @@
 			border: none;
 			padding: 1em 2em;
 			color: #fff;
-			contain: content;
+			contain: layout style;
 		}
 
 		.material-btn:hover::after {
@@ -29,12 +29,12 @@
 			top: 0;
 			width: 100%;
 			height: 100%;
-			background-color: rgba(255,255,255,.1);
+			background-color: rgba(255,255,255,.2);
 
-			opacity: .8;
+			opacity: .7;
 			transition: opacity .3s ease-in-out;
-			will-change: opacity;
-			box-shadow: 0 2px 10px 2px rgba(0,0,0,.4);
+			will-change: opacity, transform;
+			box-shadow: 0 1px 5px 2px rgba(0,0,0,.3);
 		}
 
 		.material-btn__wrap {
