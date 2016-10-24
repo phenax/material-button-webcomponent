@@ -1,67 +1,83 @@
 
-class MaterialBtn extends HTMLElement {
+// The template element
+const $templateEl= document.currentScript.ownerDocument.getElementById('materialBtn');
 
-	static get observedAttributes() {
-		return [ "color" ];
-	}
+
+class MaterialBtn extends HTMLElement {
 
 	constructor() {
 		super();
 
 		this.DEFAULT_COLOR= '#3F51B5';
 
-
+		// Bind methods to current context
 		this._buttonClickHandler= this._buttonClickHandler.bind(this);
 		this._calculationLoop= this._calculationLoop.bind(this);
 		this._renderLoop= this._renderLoop.bind(this);
 
-
-		const $content= document.currentScript.ownerDocument;
-		const $template= $content.querySelector('#materialBtn');
-
-		this._root= this.attachShadow({mode: 'open'});
-		this._root.appendChild($template.content.cloneNode(true));
+		// Shadow root
+		this._root= this.attachShadow({ mode: 'open' });
+		this._root.appendChild($templateEl.content.cloneNode(true));
 	}
 
 
+	// Getter and setter for text inside the button
 	get text() { return this._text; }
-	set text(_text) { this._text= _text; }
+	set text(text) {
+		
+		this._text= text;
 
+		this._$textEl.innerHTML= text;
+	}
+
+	// Getter and setter for the button color
 	get color() { return this._color; }
-	set color(_color) { this._color= _color; }
+	set color(color) {
+
+		color= color || this.DEFAULT_COLOR;
+
+		this.style.setProperty('--button-color', color);
+
+		this._color= color;
+		this.setAttribute('color', color);
+	}
+
+	// Getter and setter for the elevation amount(for box-shadow)
+	get elevation() { return this._elevation; }
+	set elevation(elevation) {
+
+		if(!elevation)
+			return;
+
+		this.style.setProperty('--button-drop-shadow', elevation);
+
+		this._elevation= elevation;
+		this.setAttribute('elevation', elevation);
+	}
 
 
 	connectedCallback() {
-
-		this._isAnimating= false;
-		this._dimens= null;
-
-		this._setUpComponent();
-
+		
 		this._$textEl= this._root.querySelector('.js-text');
 		this._$ripple= this._root.querySelector('.js-ripple');
 
-		this._initializeComponent();
+		this._setUpComponent();
 	}
 
+
+
+	// Set up the element and set its attributes
 	_setUpComponent() {
 
-		this.color= this.dataset.color || this.DEFAULT_COLOR;
-
-		this.text= this.textContent || '';
-
-		this._hasDropShadow= this.dataset.isElevated || true;
-	}
-
-	_initializeComponent() {
-
-		this._$textEl.textContent= this.text;
-
-		this.style.backgroundColor= this.color;
+		this.color= this.getAttribute('color');
+		this.text= this.innerHTML || '';
+		this.elevation= this.getAttribute('elevation');
 
 		this.addEventListener('click', this._buttonClickHandler);
 	}
 
+
+	// Click event handler for the button
 	_buttonClickHandler(e) {
 
 		this.triggerRipple({
@@ -71,74 +87,87 @@ class MaterialBtn extends HTMLElement {
 	}
 
 
-	/**
-	 * (public) Trigger a ripple in the button
-	 * 
-	 * @param  {[type]} clickPos [description]
-	 */
+
+	// PUBLIC - Triggers a ripple in the button
+	// @params clickPos(Object) - { x: 0, y: 0 } - The click coordinates
 	triggerRipple(clickPos) {
 
+		// Prevents ripple when the current animation is processing
 		if(this._isAnimating)
 			return;
 
 		this._isAnimating= true;
 
+
+		// set up the initial state and the target state
 		this._setupAnimationInitialState(clickPos);
 
+
+		// Start iterating the frames
 		window.requestAnimationFrame(this._calculationLoop);
 		window.requestAnimationFrame(this._renderLoop);
 	}
 
 	_setupAnimationInitialState(clickPos) {
 
-		// Dimensions and position data
 		const dimens= this.getBoundingClientRect();
 
 
-		// current state of the ripple
-		this._currentRipple= { scale: 0, opacity: 1 };
-
-
-		// relative click position
+		// relative click position(If the clickPos is not set, trigger the ripple from the center)
 		this._clickPos= {
+
 			x: (clickPos)? clickPos.x - dimens.left: dimens.width/2,
+
 			y: (clickPos)? clickPos.y - dimens.top: dimens.height/2
 		};
 
 
 		// Dont know what to call this. It does some calculation.
-		const getRippleSize= (size, pos) => ((pos > size/2)? pos: size - pos);
+		const calculateOppOrdinate= (size, pos) => ((pos > size/2)? pos: size - pos);
+
+
+		// current state of the ripple(Goes from the initial state to the final state)
+		this._currentRipple= { scale: 0, opacity: 1 };
 
 
 		// The target state of the ripple
 		this._targetRipple= {
+
 			scale: 2* Math.sqrt(
-				Math.pow(getRippleSize(dimens.width, this._clickPos.x),  2) + 
-				Math.pow(getRippleSize(dimens.height, this._clickPos.y), 2)
+
+				Math.pow(calculateOppOrdinate(dimens.width, this._clickPos.x),  2) + 
+
+				Math.pow(calculateOppOrdinate(dimens.height, this._clickPos.y), 2)
 			),
+
 			opacity: 0,
 		};
 	}
 
+
+
+	// Calculates the styles to be applied on every frame
 	_calculationLoop() {
 
 		// current+= (target - current)/strength for easing the increments
 		this._currentRipple.scale +=   (this._targetRipple.scale - this._currentRipple.scale)/10;
 
-		this._currentRipple.opacity += (this._targetRipple.opacity - this._currentRipple.opacity)/15;
+		this._currentRipple.opacity += (this._targetRipple.opacity - this._currentRipple.opacity)/10;
 
 
 		// If the opacity crosses a minimum, stop loop
-		if( this._currentRipple.opacity <= 0.05 )
+		if( this._currentRipple.opacity <= 0.02 )
 			this._isAnimating= false;
 		else
 			window.requestAnimationFrame(this._calculationLoop);
 	}
 
+
+
+	// Renders the styles to the screen
 	_renderLoop() {
 
-
-		// apply the styles in the calculation loop
+		// apply the styles
 		this._$ripple.style.transform= `
 			translate(${this._clickPos.x}px, ${this._clickPos.y}px)
 			scale(${this._currentRipple.scale})
@@ -147,14 +176,19 @@ class MaterialBtn extends HTMLElement {
 		this._$ripple.style.opacity= this._currentRipple.opacity;
 
 
+
 		// If the calculation loop has ended, stop animating and reset the styles
 		if(this._isAnimating)
 			window.requestAnimationFrame(this._renderLoop);
 		else {
-			this._$ripple.style.transform= 'none'
+
+			this._$ripple.style.transform= 'none';
+
 			this._$ripple.style.opacity= 0;
 		}
 	}
+
+
 
 	disconnectedCallback() {
 
@@ -163,4 +197,12 @@ class MaterialBtn extends HTMLElement {
 	}
 }
 
-window.customElements.define('material-btn', MaterialBtn, {extends: 'button'});
+
+window.customElements.define(
+	
+	$templateEl.dataset.tagName, 
+	
+	MaterialBtn, 
+	
+	{extends: 'button'}
+);
