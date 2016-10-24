@@ -1,7 +1,5 @@
 
-node_modules
-
-*.css.map
+node_modules/
 
 *.log
 

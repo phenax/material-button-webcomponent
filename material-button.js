@@ -21,6 +21,16 @@ class MaterialBtn extends HTMLElement {
 	}
 
 
+	connectedCallback() {
+
+		this._$textEl= this._root.querySelector('.js-text');
+		this._$ripple= this._root.querySelector('.js-ripple');
+
+		this._setUpComponent();
+	}
+
+
+
 	// Getter and setter for text inside the button
 	get text() { return this._text; }
 	set text(text) {
@@ -46,6 +56,7 @@ class MaterialBtn extends HTMLElement {
 	get elevation() { return this._elevation; }
 	set elevation(elevation) {
 
+		// If its not set, dont do shit
 		if(!elevation)
 			return;
 
@@ -53,15 +64,6 @@ class MaterialBtn extends HTMLElement {
 
 		this._elevation= elevation;
 		this.setAttribute('elevation', elevation);
-	}
-
-
-	connectedCallback() {
-		
-		this._$textEl= this._root.querySelector('.js-text');
-		this._$ripple= this._root.querySelector('.js-ripple');
-
-		this._setUpComponent();
 	}
 
 
@@ -89,7 +91,7 @@ class MaterialBtn extends HTMLElement {
 
 
 	// PUBLIC - Triggers a ripple in the button
-	// @params clickPos(Object) - { x: 0, y: 0 } - The click coordinates
+	// @params clickPos:object = { x: 0, y: 0 } - The click coordinates
 	triggerRipple(clickPos) {
 
 		// Prevents ripple when the current animation is processing
