@@ -1,6 +1,6 @@
 {
-  "name": "material-button",
-  "version": "0.1.0",
+  "name": "material-button-webcomponent",
+  "version": "0.1.4",
   "description": "A material button web component",
   "main": "material-button.html",
   "scripts": {
@@ -14,7 +14,8 @@
     "material",
     "button",
     "web",
-    "components"
+    "components",
+    "web-components"
   ],
   "author": "Akshay Nair <phenax5@gmail.com>",
   "license": "Apache-2.0"

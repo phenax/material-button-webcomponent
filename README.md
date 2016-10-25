@@ -8,9 +8,12 @@ As of now, customElements v1 is only supported on Chrome 54.*
 <br />
 
 ### Usage
+
+* Install with npm ```npm install --save material-button-webcomponent``` or clone this repo.
+
 * Import the html inside the head
 ```html
-  <link rel="import" async href="./material-button.html" />
+  <link rel="import" async href="./node_modules/material-button-webcomponentmaterial-button.html" />
 ```
 
 * Use the button wherever you want.
