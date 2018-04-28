@@ -1,4 +1,6 @@
 # Material Button WebComponent
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/phenax/material-button-webcomponent.svg)](https://greenkeeper.io/)
 Experimenting with the customElements v1 spec.
 
 *Note: To use it for production, use customElements v1 polyfill and build the material-button.js to es5. 
